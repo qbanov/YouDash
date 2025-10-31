@@ -13,7 +13,6 @@ function Layout() {
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 500);
-
     return () => clearTimeout(timer);
   }, []);
 
@@ -22,8 +21,12 @@ function Layout() {
       <LoadingScreen isVisible={isLoading} />
       <UserBar />
       <Sidebar />
-      <div className="page-content" id="pageContent">
-        <Outlet />
+      <div className="page-content container-fluid py-3" id="pageContent">
+        <div className="row g-3">
+          <div className="col-12">
+            <Outlet />
+          </div>
+        </div>
       </div>
     </div>
   );
