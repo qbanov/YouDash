@@ -15,7 +15,7 @@ function Login() {
     
     try {
       const response = await authAPI.login({ username, password });
-      alert('Zalogowano pomyślnie');
+      window.location.href = '/explorer';
     } catch (err) {
       setError('Nieprawidłowe dane logowania');
     } finally {

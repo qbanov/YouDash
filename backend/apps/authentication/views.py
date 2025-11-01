@@ -49,3 +49,32 @@ def logout(request):
     response = Response({"success": True, "message": "Logged out successfully"})
     response.set_cookie('token', '', expires=0)
     return response
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def verify_token(request):
+    """Verify if user is authenticated via JWT token in cookie"""
+    try:
+        token = request.COOKIES.get('token')
+        if not token:
+            return Response({"authenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
+
+        from .jwt_auth import verify_jwt_token, decode_jwt_token
+
+        if verify_jwt_token(token):
+            # Decode token to get username
+            payload = decode_jwt_token(token)
+            username = payload.get('username') if payload else None
+
+            return Response({
+                "authenticated": True,
+                "username": username
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({"authenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
+
+    except Exception as e:
+        logger.error(f"Token verification error: {e}")
+        return Response({"authenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
+

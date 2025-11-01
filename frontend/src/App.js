@@ -9,14 +9,22 @@ import NewDetectors from './components/NewDetectors/NewDetectors';
 import Tickets from './components/Tickets/Tickets';
 import Hardware from './components/Hardware/Hardware';
 import Contracts from './components/Contracts/Contracts';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Navigate to="/map" replace />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/explorer" replace />} />
           <Route path="map" element={<Map />} />
           <Route path="explorer" element={<Explorer />} />
           <Route path="log" element={<Log />} />

@@ -37,13 +37,47 @@ def verify_user_with_smoked_api(username, password):
     except Exception:
         return False
 
-def create_jwt_token(username=None):
-    secret_key = os.getenv('SECRET_KEY')
+
+def create_jwt_token(username):
+    """Create JWT token with username in payload"""
+    import jwt
+    from datetime import datetime, timedelta
+    from django.conf import settings
+
     payload = {
-        'exp': datetime.now(timezone.utc) + timedelta(hours=8),
-        'iat': datetime.now(timezone.utc)
+        'username': username,
+        'exp': datetime.utcnow() + timedelta(hours=8),
+        'iat': datetime.utcnow()
     }
-    if username:
-        payload['username'] = username
-    
-    return jwt.encode(payload, secret_key, algorithm='HS256')
+
+    token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+    return token
+
+
+def verify_jwt_token(token):
+    """Verify JWT token and return True if valid"""
+    try:
+        import jwt
+        from django.conf import settings
+
+        # Decode and verify token
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        return True
+    except jwt.ExpiredSignatureError:
+        return False
+    except jwt.InvalidTokenError:
+        return False
+
+
+def decode_jwt_token(token):
+    """Decode JWT token and return payload"""
+    try:
+        import jwt
+        from django.conf import settings
+
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        return payload
+    except jwt.ExpiredSignatureError:
+        return None
+    except jwt.InvalidTokenError:
+        return None
